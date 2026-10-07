@@ -352,7 +352,6 @@ body::before{
     <li>Запрещено оскорбление участников клана MF и союзников в чате, Discord и голосовой связи.</li>
     <li>Информация о базе, клановых ресурсах и планах рейдов MF не разглашается посторонним. Слив — исключение.</li>
     <li>Участник MF обязан предупреждать о длительном отсутствии (более 3 дней) в Discord или через модераторов.</li>
-    <li>Клановая казна и ресурсы распределяются через Лидера и Модераторов. Самостоятельный вывод ресурсов запрещён.</li>
   </ol>
 </section>
 
@@ -362,11 +361,8 @@ body::before{
     <a class="contact-card" href="https://discord.gg/R6DXjbB6p" target="_blank" rel="noopener">
       <h3>Discord</h3><p>Основной канал связи и сборов</p>
     </a>
-    <a class="contact-card" href="https://steamcommunity.com/" target="_blank" rel="noopener">
-      <h3>Steam-группа</h3><p>Заявки на вступление</p>
-    </a>
     <a class="contact-card" href="#" id="copy-tag">
-      <h3>Тег в игре</h3><p>[MF] Ник</p>
+      <h3>Тег в игре</h3><p>MF | Ник</p>
     </a>
   </div>
 </section>
@@ -453,11 +449,10 @@ body::before{
   // ================== СОСТОЯНИЕ ==================
   let members = [];
   let isAdmin = false;
-  let firstRender = true;   // фикс: анимация каскада только один раз
+  let firstRender = true;
   let wipeManualSet = false;
 
-  // ================== АВТО-ВАЙП (объявлена до использования) ==================
-  // Первый четверг месяца, 19:00 UTC = 22:00 МСК
+  // ================== АВТО-ВАЙП ==================
   function getAutoWipe() {
     const now = new Date();
     let y = now.getUTCFullYear(), m = now.getUTCMonth();
@@ -475,7 +470,6 @@ body::before{
     return f;
   }
 
-  // Фикс: инициализируем сразу авто-датой, чтобы не мигало 00
   let wipeDate = getAutoWipe();
 
   // ================== ТАЙМЕР ==================
@@ -483,7 +477,6 @@ body::before{
     const now = new Date();
     let diff = wipeDate - now;
 
-    // Фикс: авто-сброс для всех (включая админа), если дата прошла
     if (diff <= 0) {
       wipeDate = getAutoWipe();
       diff = wipeDate - now;
@@ -541,7 +534,6 @@ body::before{
       await set(membersRef, members.filter(m => m.id !== id));
     }));
 
-    // Фикс: каскад анимируется только при первом рендере, потом мгновенно
     if (firstRender) {
       grid.classList.add('reveal-stagger');
       requestAnimationFrame(() => requestAnimationFrame(() => grid.classList.add('visible')));
@@ -623,7 +615,6 @@ body::before{
     updateCountdown();
   });
 
-  // Закрытие модалки логина
   $$('[data-login-close]').forEach(el => el.addEventListener('click', () => loginModal.hidden = true));
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
@@ -655,7 +646,6 @@ body::before{
     modal.hidden = false;
     setTimeout(() => form.nick?.focus(), 50);
   }
-  // Кнопка создаётся динамически, поэтому делегируем через document
   document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'open-add') openMemberModal();
   });
@@ -708,10 +698,10 @@ body::before{
   // ================== ПРОЧЕЕ ==================
   $('#copy-tag')?.addEventListener('click', e => {
     e.preventDefault();
-    navigator.clipboard?.writeText('[MF] ');
+    navigator.clipboard?.writeText('MF | ');
     const el = e.currentTarget.querySelector('p');
     const old = el.textContent;
-    el.textContent = 'Скопировано: [MF] ';
+    el.textContent = 'Скопировано: MF | ';
     setTimeout(() => el.textContent = old, 1500);
   });
 
@@ -741,7 +731,6 @@ body::before{
     $$('.reveal, .reveal-stagger').forEach(el => io.observe(el));
   }
 
-  // Сцена с лидером
   const leaderScene = $('#leaderScene');
   if (leaderScene) {
     const io = new IntersectionObserver((entries) => {
@@ -750,7 +739,6 @@ body::before{
     io.observe(leaderScene);
   }
 
-  // Прогресс-бар + параллакс роз
   const roseLeft = $('.rose-left');
   const roseRight = $('.rose-right');
   const progressBar = document.createElement('div');
@@ -772,7 +760,6 @@ body::before{
     });
   }, { passive: true });
 
-  // Инициализация
   if (document.readyState !== 'loading') setupReveal();
   else document.addEventListener('DOMContentLoaded', setupReveal);
 </script>
