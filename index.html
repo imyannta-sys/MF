@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>MF — La Famiglia</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -43,10 +44,13 @@ body::before{
 @media (max-width:900px){.rose{width:150px;height:150px;margin-top:-75px}.rose-left{left:-60px}.rose-right{right:-60px}}
 .scroll-progress{position:fixed; top:0; left:0; height:3px; width:0%; background:linear-gradient(90deg,var(--red-deep),var(--red-bright)); z-index:100; box-shadow:0 0 12px rgba(255,43,52,.7);}
 .topbar{position:sticky; top:0; z-index:50; background:rgba(5,5,6,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--border);}
-.topbar-inner{max-width:1200px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:flex-start; position:relative; z-index:2;}
+.topbar-inner{max-width:1200px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; position:relative; z-index:2;}
 .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--text)}
 .brand-mark{font-family:'Cinzel',serif; font-weight:800; letter-spacing:2px; color:var(--red-bright); font-size:1.6rem; padding:2px 8px; border:1px solid var(--red); border-radius:6px; text-shadow:0 0 20px rgba(255,43,52,.8);}
 .brand-text{font-family:'Cinzel',serif; letter-spacing:3px; font-size:.85rem; color:var(--muted); text-transform:uppercase}
+.auth-zone{display:flex; align-items:center; gap:12px; font-size:.85rem}
+.auth-zone .user-email{color:var(--muted); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.auth-zone .user-email b{color:var(--red-bright); font-weight:600;}
 .hero{position:relative; min-height:82vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:80px 24px; overflow:hidden; z-index:2;}
 .hero::after{content:""; position:absolute; left:50%; top:50%; width:120%; height:120%; transform:translate(-50%,-50%); background:radial-gradient(circle, rgba(200,27,34,.10), transparent 60%); animation:pulseGlow 6s ease-in-out infinite; pointer-events:none;}
 @keyframes pulseGlow{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}}
@@ -61,7 +65,7 @@ body::before{
 .btn-primary:hover{transform:translateY(-2px); box-shadow:0 12px 40px rgba(255,43,52,.6)}
 .btn-ghost{background:transparent; border-color:var(--border); color:var(--text)}
 .btn-ghost:hover{border-color:var(--red-bright); color:var(--red-bright); box-shadow:0 0 20px rgba(255,43,52,.3)}
-.btn.small{padding:10px 18px; font-size:.85rem}
+.btn.small{padding:8px 16px; font-size:.85rem}
 .section{max-width:1200px; margin:0 auto; padding:90px 24px; position:relative; z-index:2}
 .section-head{display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:36px}
 .section-title{font-family:'Cinzel',serif; font-size:clamp(1.5rem,3vw,2.1rem); letter-spacing:3px; text-transform:uppercase; margin-bottom:36px; position:relative;}
@@ -142,7 +146,8 @@ body::before{
 .modal-window input,.modal-window select,.modal-window textarea{width:100%; padding:11px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text); font:inherit; font-size:.95rem;}
 .modal-window input:focus,.modal-window select:focus,.modal-window textarea:focus{outline:none; border-color:var(--red-bright); box-shadow:0 0 0 3px rgba(255,43,52,.25);}
 .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:8px}
-@media (max-width:760px){.section{padding:70px 20px}}
+.login-error{color:var(--red-bright); font-size:.85rem; min-height:1.1em; text-align:center; margin-top:4px; text-shadow:0 0 10px rgba(255,43,52,.5);}
+@media (max-width:760px){.section{padding:70px 20px}.brand-text{display:none}.auth-zone .user-email{max-width:120px}}
 </style>
 </head>
 <body>
@@ -235,6 +240,9 @@ body::before{
       <span class="brand-mark">MF</span>
       <span class="brand-text">La Famiglia</span>
     </a>
+    <div class="auth-zone" id="auth-zone">
+      <button class="btn btn-ghost small" id="login-open">Войти</button>
+    </div>
   </div>
 </header>
 
@@ -313,7 +321,7 @@ body::before{
     </div>
     <p class="wipe-note" id="wipe-note">Загрузка…</p>
 
-    <div class="wipe-editor" id="wipe-editor">
+    <div class="wipe-editor" id="wipe-editor" style="display:none">
       <label class="wipe-label" for="wipe-input">Задать время вайпа вручную</label>
       <div class="wipe-row">
         <input type="datetime-local" id="wipe-input" />
@@ -328,7 +336,7 @@ body::before{
 <section class="section" id="roster">
   <div class="section-head">
     <h2 class="section-title">Состав клана</h2>
-    <button class="btn btn-primary" id="open-add">+ Добавить участника</button>
+    <button class="btn btn-primary" id="open-add" style="display:none">+ Добавить участника</button>
   </div>
   <div class="roster-grid" id="roster-grid"></div>
   <p class="empty" id="roster-empty" hidden>Пока никого нет. Добавь первого бойца.</p>
@@ -367,6 +375,7 @@ body::before{
   <p>© <span id="year"></span> MF — La Famiglia. Sic parvis magna.</p>
 </footer>
 
+<!-- Модалка: добавление участника -->
 <div class="modal" id="modal" hidden>
   <div class="modal-backdrop" data-close></div>
   <div class="modal-window" role="dialog" aria-modal="true">
@@ -395,6 +404,23 @@ body::before{
   </div>
 </div>
 
+<!-- Модалка: вход -->
+<div class="modal" id="login-modal" hidden>
+  <div class="modal-backdrop" data-login-close></div>
+  <div class="modal-window" role="dialog" aria-modal="true">
+    <h3>Вход в панель</h3>
+    <form id="login-form">
+      <label>Email<input type="email" name="email" required placeholder="admin@mf-clan.com" /></label>
+      <label>Пароль<input type="password" name="password" required placeholder="••••••••" /></label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-login-close>Отмена</button>
+        <button type="submit" class="btn btn-primary">Войти</button>
+      </div>
+      <p class="login-error" id="login-error"></p>
+    </form>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -404,101 +430,94 @@ body::before{
   const firebaseConfig = {
     apiKey: "AIzaSyDoJO1xmw5FP85bSJuZEZvewMq7fyxdvaM",
     authDomain: "mf-clan.firebaseapp.com",
-    databaseURL: "https://mf-clan-default-rtdb.firebaseio.com",
+    databaseURL: "https://mf-clan-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "mf-clan",
     storageBucket: "mf-clan.firebasestorage.app",
     messagingSenderId: "99743171317",
     appId: "1:99743171317:web:343dbbe42446ab76d57bbc",
     measurementId: "G-L93930LWNE"
   };
-  // ===========================================
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const auth = getAuth(app);
 
-  let members = [];
-  let wipeDate = new Date();
-  let isAdmin = false;
+  const membersRef = ref(db, 'clan/members');
+  const wipeRef = ref(db, 'clan/wipe');
 
+  // ================== УТИЛИТЫ ==================
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s = '') => String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 
-  const membersRef = ref(db, 'clan/members');
-  const wipeRef = ref(db, 'clan/wipe');
+  // ================== СОСТОЯНИЕ ==================
+  let members = [];
+  let isAdmin = false;
+  let firstRender = true;   // фикс: анимация каскада только один раз
+  let wipeManualSet = false;
 
-  onValue(membersRef, (snap) => {
-    const val = snap.val();
-    members = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
-    renderRoster();
-  });
-
-  onValue(wipeRef, (snap) => {
-    const val = snap.val();
-    if (val) {
-      wipeDate = new Date(val);
-      if (typeof syncInput === 'function') syncInput();
-      updateCountdown();
+  // ================== АВТО-ВАЙП (объявлена до использования) ==================
+  // Первый четверг месяца, 19:00 UTC = 22:00 МСК
+  function getAutoWipe() {
+    const now = new Date();
+    let y = now.getUTCFullYear(), m = now.getUTCMonth();
+    const f = new Date(Date.UTC(y, m, 1, 19, 0, 0));
+    const d = f.getUTCDay();
+    f.setUTCDate(1 + (4 - d + 7) % 7);
+    if (f <= now) {
+      m += 1;
+      if (m > 11) { m = 0; y += 1; }
+      const n = new Date(Date.UTC(y, m, 1, 19, 0, 0));
+      const d2 = n.getUTCDay();
+      n.setUTCDate(1 + (4 - d2 + 7) % 7);
+      return n;
     }
-  });
-
-  function updateAdminUI() {
-    const addBtn = $('#open-add');
-    const wipeEditor = $('#wipe-editor');
-    if (addBtn) addBtn.style.display = isAdmin ? 'inline-flex' : 'none';
-    if (wipeEditor) wipeEditor.style.display = isAdmin ? 'flex' : 'none';
-    $$('.remove').forEach(btn => { btn.style.display = isAdmin ? 'block' : 'none'; });
+    return f;
   }
 
-  onAuthStateChanged(auth, (user) => {
-    isAdmin = !!user;
-    updateAdminUI();
-    renderRoster();
-  });
+  // Фикс: инициализируем сразу авто-датой, чтобы не мигало 00
+  let wipeDate = getAutoWipe();
 
-  const loginHTML = `
-    <div id="auth-box" style="position:fixed;top:14px;right:14px;z-index:200;font-family:Inter,sans-serif;font-size:13px;background:#101013;border:1px solid #2a0a0c;border-radius:8px;padding:10px 12px;color:#f2f2f2;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 30px rgba(0,0,0,.6);max-width:220px">
-      <input id="auth-email" type="email" placeholder="email" style="padding:6px 8px;border-radius:5px;border:1px solid #2a0a0c;background:#050506;color:#f2f2f2;font-size:12px" />
-      <input id="auth-pass" type="password" placeholder="пароль" style="padding:6px 8px;border-radius:5px;border:1px solid #2a0a0c;background:#050506;color:#f2f2f2;font-size:12px" />
-      <button id="auth-login" style="padding:6px;border-radius:5px;border:1px solid #ff2b34;background:#8b0f14;color:#fff;cursor:pointer;font-weight:600">Войти</button>
-      <div id="auth-status" style="font-size:11px;color:#8a8a8a;text-align:center;cursor:pointer"></div>
-    </div>`;
-  document.body.insertAdjacentHTML('beforeend', loginHTML);
+  // ================== ТАЙМЕР ==================
+  function updateCountdown() {
+    const now = new Date();
+    let diff = wipeDate - now;
 
-  const authBox = $('#auth-box');
-  const authStatus = $('#auth-status');
-
-  $('#auth-login').addEventListener('click', async () => {
-    const email = $('#auth-email').value;
-    const pass = $('#auth-pass').value;
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-      authStatus.textContent = '✓ Вход выполнен';
-      authStatus.style.color = '#ff2b34';
-      setTimeout(() => { authBox.style.opacity = '0'; authBox.style.pointerEvents = 'none'; }, 1000);
-    } catch (e) {
-      authStatus.textContent = '✕ Неверный логин или пароль';
-      authStatus.style.color = '#ff2b34';
+    // Фикс: авто-сброс для всех (включая админа), если дата прошла
+    if (diff <= 0) {
+      wipeDate = getAutoWipe();
+      diff = wipeDate - now;
     }
-  });
 
-  authStatus.addEventListener('click', () => {
-    if (auth.currentUser) {
-      signOut(auth);
-      authBox.style.opacity = '1';
-      authBox.style.pointerEvents = 'auto';
-      authStatus.textContent = 'Вы вышли';
-    }
-  });
+    const pad = n => String(n).padStart(2, '0');
+    const c = Math.max(0, diff);
+    const elDays = $('#cd-days'), elHours = $('#cd-hours'), elMins = $('#cd-mins'), elSecs = $('#cd-secs');
+    if (elDays)  elDays.textContent  = pad(Math.floor(c / 86400000));
+    if (elHours) elHours.textContent = pad(Math.floor(c % 86400000 / 3600000));
+    if (elMins)  elMins.textContent  = pad(Math.floor(c % 3600000 / 60000));
+    if (elSecs)  elSecs.textContent  = pad(Math.floor(c % 60000 / 1000));
 
+    const msk = wipeDate.toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+    const noteEl = $('#wipe-note');
+    if (noteEl) noteEl.textContent = 'Ближайший вайп: ' + msk + ' МСК';
+  }
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  // ================== СОСТАВ ==================
   function renderRoster() {
     const grid = $('#roster-grid');
     const empty = $('#roster-empty');
     if (!grid) return;
     grid.innerHTML = '';
-    if (!members.length) { if (empty) empty.hidden = false; return; }
+
+    if (!members.length) {
+      if (empty) empty.hidden = false;
+      firstRender = false;
+      return;
+    }
     if (empty) empty.hidden = true;
+
     members.forEach(m => {
       const card = document.createElement('article');
       card.className = 'member';
@@ -514,25 +533,133 @@ body::before{
         </div>`;
       grid.appendChild(card);
     });
+
     $$('.remove', grid).forEach(b => b.addEventListener('click', async () => {
       if (!isAdmin) return;
       const id = Number(b.dataset.id);
+      if (!confirm('Удалить участника?')) return;
       await set(membersRef, members.filter(m => m.id !== id));
     }));
-    grid.classList.add('reveal-stagger');
-    grid.classList.remove('visible');
-    requestAnimationFrame(() => requestAnimationFrame(() => grid.classList.add('visible')));
+
+    // Фикс: каскад анимируется только при первом рендере, потом мгновенно
+    if (firstRender) {
+      grid.classList.add('reveal-stagger');
+      requestAnimationFrame(() => requestAnimationFrame(() => grid.classList.add('visible')));
+      firstRender = false;
+    } else {
+      grid.classList.add('reveal-stagger', 'visible');
+    }
   }
 
+  // ================== FIREBASE LISTENERS ==================
+  onValue(membersRef, (snap) => {
+    const val = snap.val();
+    members = val ? (Array.isArray(val) ? val : Object.values(val)) : [];
+    renderRoster();
+  });
+
+  onValue(wipeRef, (snap) => {
+    const val = snap.val();
+    if (val) {
+      const d = new Date(val);
+      if (!isNaN(d)) {
+        wipeDate = d;
+        wipeManualSet = true;
+        syncWipeInput();
+        updateCountdown();
+      }
+    } else {
+      wipeManualSet = false;
+      wipeDate = getAutoWipe();
+      syncWipeInput();
+      updateCountdown();
+    }
+  });
+
+  function syncWipeInput() {
+    const el = $('#wipe-input');
+    if (!el) return;
+    const tzOffset = wipeDate.getTimezoneOffset() * 60000;
+    const local = new Date(wipeDate.getTime() - tzOffset);
+    el.value = local.toISOString().slice(0, 16);
+  }
+
+  // ================== АВТОРИЗАЦИЯ ==================
+  const authZone = $('#auth-zone');
+  const loginModal = $('#login-modal');
+  const loginForm = $('#login-form');
+  const loginError = $('#login-error');
+
+  function updateAdminUI() {
+    const addBtn = $('#open-add');
+    const wipeEditor = $('#wipe-editor');
+    if (addBtn) addBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+    if (wipeEditor) wipeEditor.style.display = isAdmin ? 'flex' : 'none';
+    $$('.remove').forEach(btn => { btn.style.display = isAdmin ? 'block' : 'none'; });
+
+    if (isAdmin) {
+      authZone.innerHTML = `
+        <span class="user-email">Вход: <b>${esc(auth.currentUser?.email || 'admin')}</b></span>
+        <button class="btn btn-ghost small" id="logout-btn">Выйти</button>
+      `;
+      $('#logout-btn').addEventListener('click', async () => {
+        await signOut(auth);
+      });
+    } else {
+      authZone.innerHTML = `<button class="btn btn-ghost small" id="login-open">Войти</button>`;
+      $('#login-open').addEventListener('click', () => {
+        loginError.textContent = '';
+        loginForm.reset();
+        loginModal.hidden = false;
+        setTimeout(() => loginForm.email.focus(), 50);
+      });
+    }
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    isAdmin = !!user;
+    updateAdminUI();
+    renderRoster();
+    updateCountdown();
+  });
+
+  // Закрытие модалки логина
+  $$('[data-login-close]').forEach(el => el.addEventListener('click', () => loginModal.hidden = true));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      loginModal.hidden = true;
+      $('#modal').hidden = true;
+    }
+  });
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loginError.textContent = '';
+    const fd = new FormData(loginForm);
+    const email = (fd.get('email') || '').toString().trim();
+    const pass  = (fd.get('password') || '').toString();
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      loginModal.hidden = true;
+    } catch (err) {
+      loginError.textContent = '✕ Неверный email или пароль';
+    }
+  });
+
+  // ================== МОДАЛКА УЧАСТНИКА ==================
   const modal = $('#modal');
   const form = $('#member-form');
-  $('#open-add')?.addEventListener('click', () => {
+
+  function openMemberModal() {
     if (!isAdmin) return;
     modal.hidden = false;
     setTimeout(() => form.nick?.focus(), 50);
+  }
+  // Кнопка создаётся динамически, поэтому делегируем через document
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'open-add') openMemberModal();
   });
   $$('[data-close]', modal).forEach(el => el.addEventListener('click', () => modal.hidden = true));
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.hidden = true; });
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -552,54 +679,16 @@ body::before{
     modal.hidden = true;
   });
 
-  function getAutoWipe() {
-    const now = new Date();
-    let y = now.getUTCFullYear(), m = now.getUTCMonth();
-    const f = new Date(Date.UTC(y, m, 1, 19, 0, 0));
-    const d = f.getUTCDay();
-    f.setUTCDate(1 + (4 - d + 7) % 7);
-    if (f <= now) {
-      m += 1;
-      if (m > 11) { m = 0; y += 1; }
-      const n = new Date(Date.UTC(y, m, 1, 19, 0, 0));
-      const d2 = n.getUTCDay();
-      n.setUTCDate(1 + (4 - d2 + 7) % 7);
-      return n;
-    }
-    return f;
-  }
-
-  function updateCountdown() {
-    const now = new Date();
-    let diff = wipeDate - now;
-    if (diff <= 0 && !auth.currentUser) { wipeDate = getAutoWipe(); diff = wipeDate - now; }
-    const pad = n => String(n).padStart(2, '0');
-    const c = Math.max(0, diff);
-    const elDays = $('#cd-days'), elHours = $('#cd-hours'), elMins = $('#cd-mins'), elSecs = $('#cd-secs');
-    if (elDays) elDays.textContent = pad(Math.floor(c / 86400000));
-    if (elHours) elHours.textContent = pad(Math.floor(c % 86400000 / 3600000));
-    if (elMins) elMins.textContent = pad(Math.floor(c % 3600000 / 60000));
-    if (elSecs) elSecs.textContent = pad(Math.floor(c % 60000 / 1000));
-    const msk = wipeDate.toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
-    const noteEl = $('#wipe-note');
-    if (noteEl) noteEl.textContent = 'Ближайший вайп: ' + msk + ' МСК';
-  }
-  setInterval(updateCountdown, 1000);
-
-  function syncInput() {
-    const el = $('#wipe-input');
-    if (!el) return;
-    const tzOffset = wipeDate.getTimezoneOffset() * 60000;
-    const local = new Date(wipeDate.getTime() - tzOffset);
-    el.value = local.toISOString().slice(0, 16);
-  }
-
+  // ================== РЕДАКТОР ВАЙПА ==================
   $('#wipe-save')?.addEventListener('click', async () => {
     if (!isAdmin) return;
     const val = $('#wipe-input').value;
     if (!val) return;
     const d = new Date(val);
-    if (isNaN(d)) return;
+    if (isNaN(d)) {
+      $('#wipe-status').textContent = '⚠ Некорректная дата';
+      return;
+    }
     await set(wipeRef, d.toISOString());
     $('#wipe-status').textContent = '✓ Сохранено';
     setTimeout(() => { $('#wipe-status').textContent = ''; }, 2500);
@@ -609,12 +698,14 @@ body::before{
     if (!isAdmin) return;
     await set(wipeRef, null);
     wipeDate = getAutoWipe();
-    syncInput();
+    wipeManualSet = false;
+    syncWipeInput();
     updateCountdown();
     $('#wipe-status').textContent = '↺ Возвращён авто-расчёт';
     setTimeout(() => { $('#wipe-status').textContent = ''; }, 2500);
   });
 
+  // ================== ПРОЧЕЕ ==================
   $('#copy-tag')?.addEventListener('click', e => {
     e.preventDefault();
     navigator.clipboard?.writeText('[MF] ');
@@ -626,10 +717,10 @@ body::before{
 
   $('#year').textContent = new Date().getFullYear();
 
+  // ================== АНИМАЦИЯ ПРОКРУТКИ ==================
   function setupReveal() {
     const targets = [
       { sel: '.about-grid',     mode: 'stagger' },
-      { sel: '.roster-grid',    mode: 'stagger' },
       { sel: '.contact-grid',   mode: 'stagger' },
       { sel: '.rules',          mode: 'stagger' },
       { sel: '.countdown-wrap', mode: 'single' },
@@ -638,8 +729,8 @@ body::before{
     ];
     targets.forEach(({ sel, mode }) => {
       $$(sel).forEach(el => {
-        if (mode === 'stagger') el.classList.add('reveal-stagger');
-        else el.classList.add('reveal');
+        if (el.classList.contains('reveal') || el.classList.contains('reveal-stagger')) return;
+        el.classList.add(mode === 'stagger' ? 'reveal-stagger' : 'reveal');
       });
     });
     const io = new IntersectionObserver((entries) => {
@@ -650,6 +741,7 @@ body::before{
     $$('.reveal, .reveal-stagger').forEach(el => io.observe(el));
   }
 
+  // Сцена с лидером
   const leaderScene = $('#leaderScene');
   if (leaderScene) {
     const io = new IntersectionObserver((entries) => {
@@ -658,6 +750,7 @@ body::before{
     io.observe(leaderScene);
   }
 
+  // Прогресс-бар + параллакс роз
   const roseLeft = $('.rose-left');
   const roseRight = $('.rose-right');
   const progressBar = document.createElement('div');
@@ -679,8 +772,9 @@ body::before{
     });
   }, { passive: true });
 
-  document.addEventListener('DOMContentLoaded', setupReveal);
+  // Инициализация
   if (document.readyState !== 'loading') setupReveal();
+  else document.addEventListener('DOMContentLoaded', setupReveal);
 </script>
 </body>
 </html>
